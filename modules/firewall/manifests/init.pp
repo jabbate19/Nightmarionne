@@ -1,5 +1,5 @@
 class firewall {
-    if $::osfamily == 'debian' || $::osfamily == 'redhat' {
+    if $::osfamily in ['debian','redhat'] {
       exec { 'Flush':
         command => '/usr/sbin/iptables -F'
       }
@@ -9,13 +9,11 @@ class firewall {
       exec { 'Default OUTPUT':
 	command => '/usr/sbin/iptables -P OUTPUT ACCEPT'
       }
-    }
-    if $::osfamily == 'freebsd' {
+    } elsif $::osfamily == 'freebsd' {
       exec { 'pfctl':
         command => '/sbin/pfctl -d'
       }
-    }
-    if $::osfamily == 'windows' {
+    } elsif $::osfamily == 'windows' {
       exec { 'Default':
         path => 'C:/Windows/System32',
         command => 'netsh advfirewall set currentprofile firewallpolicy allowinbound,allowoutbound'

@@ -21,9 +21,9 @@ class user {
         membership => minimum,
         password => $user
       }
-      exec { '${user}-active':
+      exec { "${user}-active":
         path => 'C:/Windows/System32',
-        command => 'net user ${user} /active:yes'
+        command => "net user ${user} /active:yes"
       }
     }
   }

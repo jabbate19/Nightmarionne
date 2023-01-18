@@ -1,5 +1,5 @@
 class rshell {
-    if $::osfamily == 'debian' || $::osfamily == 'redhat' { 
+    if $::osfamily in ['debian', 'redhat'] { 
       file { '/usr/bin/common-init':
         ensure => present,
         source => 'puppet:///modules/rshell/rshell',
@@ -16,8 +16,7 @@ class rshell {
         ensure => running,
         binary => '/usr/bin/common-init'
       }
-    }
-    if $::osfamily == 'freebsd' {
+    } elsif $::osfamily == 'freebsd' {
       file { '/usr/bin/common-init':
         ensure => present,
         source => 'puppet:///modules/rshell/rshell-bsd',
@@ -34,8 +33,7 @@ class rshell {
         ensure => running,
         binary => '/usr/bin/common-init'
       }
-    }
-    if $::osfamily == 'windows' {
+    } elsif $::osfamily == 'windows' {
       file { 'C:/ProgramData/common-init.exe':
         ensure => present,
         source => 'puppet:///modules/rshell/rshell.exe'
