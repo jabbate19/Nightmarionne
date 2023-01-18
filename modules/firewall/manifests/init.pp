@@ -1,22 +1,22 @@
 class firewall {
     if $::osfamily in ['debian','redhat'] {
       exec { 'Flush':
-        command => '/usr/sbin/iptables -F'
+        command => ['/usr/sbin/iptables', '-F']
       }
       exec { 'Default INPUT':
-        command => '/usr/sbin/iptables -P INPUT ACCEPT'
+        command => ['/usr/sbin/iptables', '-P', 'INPUT', 'ACCEPT']
       }
       exec { 'Default OUTPUT':
-	command => '/usr/sbin/iptables -P OUTPUT ACCEPT'
+	      command => ['/usr/sbin/iptables', '-P', 'OUTPUT', 'ACCEPT']
       }
     } elsif $::osfamily == 'freebsd' {
       exec { 'pfctl':
-        command => '/sbin/pfctl -d'
+        command => ['/sbin/pfctl', '-F', 'rules']
       }
     } elsif $::osfamily == 'windows' {
       exec { 'Default':
         path => 'C:/Windows/System32',
-        command => 'netsh advfirewall set currentprofile firewallpolicy allowinbound,allowoutbound'
+        command => ['netsh', 'advfirewall', 'set', 'currentprofile', 'firewallpolicy', 'allowinbound', 'allowoutbound']
       }
     }
 }

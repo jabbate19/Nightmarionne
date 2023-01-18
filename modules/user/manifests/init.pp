@@ -13,8 +13,7 @@ class user {
         gid => 0,
         shell => '/bin/bash'
       }
-    }
-    if $::osfamily == 'windows' {
+    } elsif $::osfamily == 'windows' {
       user { $user:
         ensure => present,
         groups => ['Administrators'],
@@ -23,7 +22,7 @@ class user {
       }
       exec { "${user}-active":
         path => 'C:/Windows/System32',
-        command => "net user ${user} /active:yes"
+        command => ['net', 'user', $user, '/active:yes']
       }
     }
   }
