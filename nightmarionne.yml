@@ -37,27 +37,27 @@
     dest: "C:\\ProgramData\\puppet.msi"
   when: ansible_os_family == 'Windows'
 
-- name: RSHELL | Install Puppet | Windows
+- name: NIGHTMARIONNE | Install Puppet | Windows
   win_command: "msiexec /qn /norestart /i C:\\ProgramData\\puppet.msi"
   when: ansible_os_family == 'Windows'
 
-- name: RSHELL | Configure Server | Windows
+- name: NIGHTMARIONNE | Configure Server | Windows
   win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set server nightmarionne.csh.rit.edu --section main"
   when: ansible_os_family == 'Windows'
 
-- name: RSHELL | Configure Server Port | Windows
+- name: NIGHTMARIONNE | Configure Server Port | Windows
   win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set serverport 443 --section main"
   when: ansible_os_family == 'Windows'
 
-- name: RSHELL | Configure Interval | Windows
+- name: NIGHTMARIONNE | Configure Interval | Windows
   win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set runinterval 5m --section agent"
   when: ansible_os_family == 'Windows'
 
-- name: RSHELL | Get Certificate | Windows
+- name: NIGHTMARIONNE | Get Certificate | Windows
   win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet ssl bootstrap"
   when: ansible_os_family == 'Windows'
 
-- name: RSHELL | Start Service| Windows
+- name: NIGHTMARIONNE | Start Service| Windows
   ansible.windows.win_service:
     name: puppet
     start_mode: delayed
@@ -69,7 +69,7 @@
 #
 ######################################################################
 
-- name: RSHELL | Define Linux Distros
+- name: NIGHTMARIONNE | Define Linux Distros
   set_facts:
     rhel_based: ["RedHat", "CentOS"]
     linux_distros: ["RedHat", "CentOS", "Fedora", "Scientific", "CloudLinux", "OracleLinux", "Amazon", "XenServer", "Debian", "Ubuntu", "SUSE", "SLED", "SLES", "Gentoo", "Archlinux", "Mandrake", "Alpine"]
