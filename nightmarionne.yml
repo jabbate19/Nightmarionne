@@ -1,0 +1,186 @@
+
+######################################################################
+#
+# BSD Boxes
+#
+######################################################################
+- name: NIGHTMARIONNE | Install Puppet | BSD
+  community.general.pkgng:
+    name: sysutils/puppet7
+    state: present
+
+- name: NIGHTMARIONNE | Configure Server | BSD
+  shell: "puppet config set server nightmarionne.csh.rit.edu --section main"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Configure Server Port | BSD
+  shell: "puppet config set serverport 443 --section main"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Configure Interval | BSD
+  shell: "puppet config set runinterval 5m --section agent"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Start Service | Linux
+  shell: "puppet resource service puppet ensure=running enable=true"
+  when: ansible_os_family == 'FreeBSD'
+
+######################################################################
+#
+# Windows Boxes
+#
+######################################################################
+
+- name: NIGHTMARIONNE | Download Puppet Agent | Windows
+  ansible.builtin.get_url:
+    url: http://downloads.puppetlabs.com/windows/puppet-agent-x64-latest.msi
+    dest: "C:\\ProgramData\\puppet.msi"
+  when: ansible_os_family == 'Windows'
+
+- name: RSHELL | Install Puppet | Windows
+  win_command: "msiexec /qn /norestart /i C:\\ProgramData\\puppet.msi"
+  when: ansible_os_family == 'Windows'
+
+- name: RSHELL | Configure Server | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set server nightmarionne.csh.rit.edu --section main"
+  when: ansible_os_family == 'Windows'
+
+- name: RSHELL | Configure Server Port | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set serverport 443 --section main"
+  when: ansible_os_family == 'Windows'
+
+- name: RSHELL | Configure Interval | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set runinterval 5m --section agent"
+  when: ansible_os_family == 'Windows'
+
+- name: RSHELL | Get Certificate | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet ssl bootstrap"
+  when: ansible_os_family == 'Windows'
+
+- name: RSHELL | Start Service| Windows
+  ansible.windows.win_service:
+    name: puppet
+    start_mode: delayed
+    state: started
+
+######################################################################
+#
+# Linux Boxes
+#
+######################################################################
+
+- name: RSHELL | Define Linux Distros
+  set_facts:
+    rhel_based: ["RedHat", "CentOS"]
+    linux_distros: ["RedHat", "CentOS", "Fedora", "Scientific", "CloudLinux", "OracleLinux", "Amazon", "XenServer", "Debian", "Ubuntu", "SUSE", "SLED", "SLES", "Gentoo", "Archlinux", "Mandrake", "Alpine"]
+
+- name: NIGHTMARIONNE | Install Puppet | Debian 11
+  ansible.builtin.apt:
+    deb: http://apt.puppet.com/puppet-release-bullseye.deb
+  when: ansible_os_family == 'Debian' and ansible_distribution_major_version == 11
+
+- name: NIGHTMARIONNE | Install Puppet | Debian 10
+  ansible.builtin.apt:
+    deb: http://apt.puppet.com/puppet-release-buster.deb
+  when: ansible_os_family == 'Debian' and ansible_distribution_major_version == 10
+
+- name: NIGHTMARIONNE | Install Puppet | Debian 9
+  ansible.builtin.apt:
+    deb: http://apt.puppet.com/puppet-release-stretch.deb
+  when: ansible_os_family == 'Debian' and ansible_distribution_major_version == 9
+
+- name: NIGHTMARIONNE | Install Puppet | Ubuntu 22
+  ansible.builtin.apt:
+    deb: http://apt.puppet.com/puppet-release-jammy.deb
+  when: ansible_os_family == 'Ubuntu' and ansible_distribution_major_version == 22
+
+- name: NIGHTMARIONNE | Install Puppet | Ubuntu 20
+  ansible.builtin.apt:
+    deb: http://apt.puppet.com/puppet-release-focal.deb
+  when: ansible_os_family == 'Ubuntu' and ansible_distribution_major_version == 20
+
+- name: NIGHTMARIONNE | Install Puppet | Ubuntu 18
+  ansible.builtin.apt:
+    deb: http://apt.puppet.com/puppet-release-bionic.deb
+  when: ansible_os_family == 'Ubuntu' and ansible_distribution_major_version == 18
+
+- name: NIGHTMARIONNE | Install Puppet | Ubuntu 16
+  ansible.builtin.apt:
+    deb: http://apt.puppet.com/puppet-release-xenial.deb
+  when: ansible_os_family == 'Ubuntu' and ansible_distribution_major_version == 16
+
+- name: NIGHTMARIONNE | Install Puppet | RHEL 9
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-el-9.noarch.rpm
+  when: ansible_os_family in rhel_based and ansible_distribution_major_version == 9
+
+- name: NIGHTMARIONNE | Install Puppet | RHEL 8
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-el-8.noarch.rpm
+  when: ansible_os_family in rhel_based and ansible_distribution_major_version == 9
+
+- name: NIGHTMARIONNE | Install Puppet | RHEL 7
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-el-7.noarch.rpm
+  when: ansible_os_family in rhel_based and ansible_distribution_major_version == 9
+
+- name: NIGHTMARIONNE | Install Puppet | RHEL 6
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-el-6.noarch.rpm
+  when: ansible_os_family in rhel_based and ansible_distribution_major_version == 9
+
+- name: NIGHTMARIONNE | Install Puppet | Fedora 36
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-fedora-36.noarch.rpm
+  when: ansible_os_family == "Fedora" and ansible_distribution_major_version == 36
+
+- name: NIGHTMARIONNE | Install Puppet | Fedora 34
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-fedora-34.noarch.rpm
+  when: ansible_os_family == "Fedora" and ansible_distribution_major_version == 34
+
+- name: NIGHTMARIONNE | Install Puppet | Fedora 32
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-fedora-32.noarch.rpm
+  when: ansible_os_family == "Fedora" and ansible_distribution_major_version == 32
+
+- name: NIGHTMARIONNE | Install Puppet | Fedora 31
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-fedora-31.noarch.rpm
+  when: ansible_os_family == "Fedora" and ansible_distribution_major_version == 31
+
+- name: NIGHTMARIONNE | Install Puppet | Fedora 30
+  ansible.builtin.yum:
+    name: http://yum.puppet.com/puppet-release-fedora-30.noarch.rpm
+  when: ansible_os_family == "Fedora" and ansible_distribution_major_version == 30
+
+- name: NIGHTMARIONNE | Install Puppet Agent | Yum
+  ansible.builtin.yum:
+    name: puppet-agent
+  when: ansible_os_family in rhel_based or ansible_os_family == "Fedora"
+
+- name: NIGHTMARIONNE | Install Puppet Agent | Apt
+  ansible.builtin.apt:
+    name: puppet-agent
+  when: ansible_os_family in ["Debian", "Ubuntu"]
+
+- name: NIGHTMARIONNE | Configure Server | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set server nightmarionne.csh.rit.edu --section main"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Configure Server Port | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set serverport 443 --section main"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Configure Interval | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set runinterval 5m --section agent"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Get Certificate | Linux
+  shell: "/opt/puppetlabs/bin/puppet ssl bootstrap"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Start Service | Linux
+  shell: "/opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true"
+  when: ansible_os_family in linux_distros
+
