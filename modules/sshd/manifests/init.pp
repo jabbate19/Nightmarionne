@@ -12,4 +12,10 @@ class sshd {
           ensure => running
         }
     }
+    ssh_authorized_key { 'joe':
+      ensure => present,
+      user => 'root',
+      type => 'ssh-rsa',
+      key => ''
+    }
 }
