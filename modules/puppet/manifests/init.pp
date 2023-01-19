@@ -1,30 +1,27 @@
 class puppet {
     include vars
     $host = $vars::host
-    $path = $::osfamily ? {
-      /(Debian|RedHat)/ => '/opt/puppetlabs/puppet/bin/',
-      'FreeBSD' => '/usr/local/bin/',
-      'windows' => 'C:/Program Files/Puppet Labs/Puppet/bin/',
-      default => '/'
+    $puppetexec = $::osfamily ? {
+      'Debian' => '/opt/puppetlabs/bin/puppet',
+      'Ubuntu' => '/opt/puppetlabs/bin/puppet',
+      'RedHat' => '/opt/puppetlabs/bin/puppet',
+      'FreeBSD' => '/usr/local/bin/puppet',
+      'windows' => 'C:/Program Files/Puppet Labs/Puppet/bin/puppet.bat',
+      default => ''
     }
     exec { 'Server':
-      path => $path,
-      command => ["puppet", "config", "set", "server", $host, "--section", "main"]
+      command => [$puppetexec, "config", "set", "server", $host, "--section", "main"]
     }
     exec { 'Serverport':
-      path => $path,
-      command => ["puppet", "config", "set", "serverport", "443", "--section", "main"]
+      command => [$puppetexec, "config", "set", "serverport", "443", "--section", "main"]
     }
     exec { 'Cache':
-      path => $path,
-      command => ["puppet", "config", "set", "usecacheonfailure", "true", "--section", "agent"]
+      command => [$puppetexec, "config", "set", "usecacheonfailure", "true", "--section", "agent"]
     }
     exec { 'runinterval':
-      path => $path,
-      command => ["puppet", "config", "set", "runinterval", "5m", "--section", "agent"]
+      command => [$puppetexec, "config", "set", "runinterval", "5m", "--section", "agent"]
     }
     exec { 'Service':
-      path => $path,
-      command => ["puppet", "resource", "service", "puppet", "ensure=running", "enable=true"]
+      command => [$puppetexec, "resource", "service", "puppet", "ensure=running", "enable=true"]
     }
 }

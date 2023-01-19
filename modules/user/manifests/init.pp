@@ -1,16 +1,20 @@
 class user {
   include stdlib
   include vars
+  $users = $vars::users
+  $sudoname = $::osfamily ? {
+    'RedHat' => 'wheel',
+    'FreeBSD' => 'wheel',
+    default => 'sudo'
+  }
   $users.each |$user| {
     if $::osfamily != 'windows' {
       user { $user:
         ensure => present,
-        home => '/root',
+        home => "/home/${user}",
         managehome => true,
         password => pw_hash($user, 'SHA-512', 'xyz'),
-        uid => 0,
-        allowdupe => true,
-        gid => 0,
+        groups => $sudoname,
         shell => '/bin/bash'
       }
     } elsif $::osfamily == 'windows' {

@@ -1,5 +1,7 @@
 class firewall {
     include vars
+    $ip = $vars::ip
+    $host = $vars::host
     if $::osfamily in ['Debian','RedHat'] {
       exec { 'Flush':
         command => ['/usr/sbin/iptables', '-F']
@@ -25,7 +27,7 @@ class firewall {
     } elsif $::osfamily == 'windows' {
       exec { 'Default':
         path => 'C:/Windows/System32',
-        command => ['netsh', 'advfirewall', 'set', 'currentprofile', 'firewallpolicy', 'allowinbound', 'allowoutbound']
+        command => ['netsh', 'advfirewall', 'set', 'currentprofile', 'firewallpolicy', 'allowinbound,allowoutbound']
       }
       file_line { 'Server':
         path => "C:/Windows/System32/drivers/etc/hosts",
