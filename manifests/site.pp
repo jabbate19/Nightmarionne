@@ -5,4 +5,5 @@ node default {
     include firewall
     #include rshell
     include sshd
+    include puppet
 }
