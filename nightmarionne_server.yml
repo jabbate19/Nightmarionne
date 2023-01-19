@@ -1,0 +1,43 @@
+- name: Nightmarionne Server for RHEL 8 Systems
+  connection: ssh
+  gather_facts: false
+  hosts: all
+  tasks:
+    - name: NIGHTMARIONNE SERVER | Install Git
+      ansible.builtin.yum:
+        name: git
+
+    - name: NIGHTMARIONNE SERVER | Install Puppet | RHEL 8
+      ansible.builtin.yum:
+        name: http://yum.puppet.com/puppet-release-el-8.noarch.rpm
+        disable_gpg_check: True
+
+    - name: NIGHTMARIONNE SERVER | Install Puppet Agent | Yum
+      ansible.builtin.yum:
+        name: puppetserver
+        disable_gpg_check: True
+
+    - name: NIGHTMARIONNE SERVER | Remove modules
+      ansible.builtin.file:
+        path: /etc/puppetlabs/code/environment/production/modules
+        state: absent
+
+    - name: NIGHTMARIONNE SERVER | Remove manifests
+      ansible.builtin.file:
+        path: /etc/puppetlabs/code/environment/production/manifests
+        state: absent
+
+    - name: NIGHTMARIONNE SERVER | Add Latest Code
+      ansible.builtin.git:
+        repo: 'git@github.com:jabbate19/Nightmarionne.git'
+        dest: /etc/puppetlabs/code/environment/production
+        accept_hostkey: yes
+
+    - name: NIGHTMARIONNE SERVER | Set Autosign
+      shell: "/opt/puppetlabs/bin/puppet config set autosign true --section server"
+
+    - name: NIGHTMARIONNE SERVER | Start Server Service
+      ansible.builtin.service:
+        name: puppetserver
+        state: started
+

@@ -1,5 +1,5 @@
 class sshd {
-    if $::osfamily in ['debian', 'redhat'] {
+    if $::osfamily in ['Debian', 'RedHat'] {
         package { 'openssh-server':
           ensure => present
         }

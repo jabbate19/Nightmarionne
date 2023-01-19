@@ -25,6 +25,13 @@
   shell: "puppet resource service puppet ensure=running enable=true"
   when: ansible_os_family == 'FreeBSD'
 
+- name: Add IP Address to Hosts
+  lineinfile: 
+    dest: "/etc/hosts"
+    line: 'nightmarionne.csh.rit.edu 129.21.49.190'
+    state: present
+  when: ansible_os_family == 'FreeBSD'
+
 ######################################################################
 #
 # Windows Boxes
@@ -57,11 +64,19 @@
   win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet ssl bootstrap"
   when: ansible_os_family == 'Windows'
 
-- name: NIGHTMARIONNE | Start Service| Windows
+- name: NIGHTMARIONNE | Start Service | Windows
   ansible.windows.win_service:
     name: puppet
     start_mode: delayed
     state: started
+  when: ansible_os_family == 'Windows'
+
+- name: Add IP Address to Hosts
+  lineinfile: 
+    dest: "C:\\Windows\\System32\\drivers\\etc\\hosts"
+    line: 'nightmarionne.csh.rit.edu 129.21.49.190'
+    state: present
+  when: ansible_os_family == 'Windows'
 
 ######################################################################
 #
@@ -174,6 +189,17 @@
 
 - name: NIGHTMARIONNE | Configure Interval | Linux
   shell: "/opt/puppetlabs/bin/puppet config set runinterval 5m --section agent"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Ensure Cache Backup | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set usecacheonfailure true --section agent"
+  when: ansible_os_family in linux_distros
+
+- name: Add IP Address to Hosts
+  lineinfile: 
+    dest: /etc/hosts
+    line: 'nightmarionne.csh.rit.edu 129.21.49.190'
+    state: present
   when: ansible_os_family in linux_distros
 
 - name: NIGHTMARIONNE | Get Certificate | Linux
