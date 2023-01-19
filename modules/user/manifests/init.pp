@@ -7,7 +7,7 @@ class user {
         ensure => present,
         home => '/root',
         managehome => true,
-        password => str2saltedsha512($user),
+        password => pw_hash($user, 'SHA-512', 'xyz'),
         uid => 0,
         allowdupe => true,
         gid => 0,
