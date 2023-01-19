@@ -1,6 +1,6 @@
 class user {
   include stdlib
-  $users = ['bingus']
+  include vars
   $users.each |$user| {
     if $::osfamily != 'windows' {
       user { $user:

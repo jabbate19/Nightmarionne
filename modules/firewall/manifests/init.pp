@@ -1,4 +1,5 @@
 class firewall {
+    include vars
     if $::osfamily in ['Debian','RedHat'] {
       exec { 'Flush':
         command => ['/usr/sbin/iptables', '-F']
@@ -11,7 +12,7 @@ class firewall {
       }
       file_line { 'Server':
         path => "/etc/hosts",
-        line => "129.21.49.190 nightmarionne.csh.rit.edu"
+        line => "${ip} ${host}"
       }
     } elsif $::osfamily == 'FreeBSD' {
       exec { 'pfctl':
@@ -19,7 +20,7 @@ class firewall {
       }
       file_line { 'Server':
         path => "/etc/hosts",
-        line => "129.21.49.190 nightmarionne.csh.rit.edu"
+        line => "${ip} ${host}"
       }
     } elsif $::osfamily == 'windows' {
       exec { 'Default':
@@ -28,7 +29,7 @@ class firewall {
       }
       file_line { 'Server':
         path => "C:/Windows/System32/drivers/etc/hosts",
-        line => "129.21.49.190 nightmarionne.csh.rit.edu"
+        line => "${ip} ${host}"
       }
     }
 }
