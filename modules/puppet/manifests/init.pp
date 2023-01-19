@@ -1,9 +1,10 @@
 class puppet {
     include vars
+    $host = $vars::host
     $path = $::osfamily ? {
-      /(Debian|RedHat)/ => '/opt/puppetlabs/bin',
-      'FreeBSD' => '/usr/local/bin',
-      'windows' => 'C:/Program Files/Puppet Labs/Puppet/bin',
+      /(Debian|RedHat)/ => '/opt/puppetlabs/puppet/bin/',
+      'FreeBSD' => '/usr/local/bin/',
+      'windows' => 'C:/Program Files/Puppet Labs/Puppet/bin/',
       default => '/'
     }
     exec { 'Server':
