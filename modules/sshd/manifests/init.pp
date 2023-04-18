@@ -3,12 +3,12 @@ class sshd {
     $keys = $vars::keys
     $users = $vars::users
     if $::osfamily in ['Debian', 'RedHat'] {
-        package { 'openssh-server':
-          ensure => present
-        }
-        service { 'sshd':
-          ensure => running
-        }
+        # package { 'openssh-server':
+        #   ensure => present
+        # }
+        # service { 'sshd':
+        #   ensure => running
+        # }
     } elsif $::osfamily == 'freebsd' {
         service { 'sshd':
           ensure => running

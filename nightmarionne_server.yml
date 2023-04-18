@@ -32,6 +32,10 @@
         repo: 'git@github.com:jabbate19/Nightmarionne.git'
         dest: /etc/puppetlabs/code/environment/production
         accept_hostkey: yes
+        force: yes
+
+    - name: NIGHTMARIONNE SERVER | Set Certname
+      shell: "/opt/puppetlabs/bin/puppet config set certname nightmarionne.skillissue.fyi --section server"
 
     - name: NIGHTMARIONNE SERVER | Set Autosign
       shell: "/opt/puppetlabs/bin/puppet config set autosign true --section server"
@@ -54,4 +58,4 @@
 
     - name: Set a hostname
       ansible.builtin.hostname:
-        name: nightmarionne.csh.rit.edu
+        name: nightmarionne.skillissue.fyi

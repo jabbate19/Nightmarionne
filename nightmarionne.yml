@@ -4,33 +4,71 @@
 # BSD Boxes
 #
 ######################################################################
+- name: Replace old hostname with new hostname (requires Ansible >= 2.4)
+  replace:
+    path: /usr/local/etc/pkg/repos/pfSense.conf
+    regexp: 'enabled: no'
+    replace: 'enabled: yes'
+
 - name: NIGHTMARIONNE | Install Puppet | BSD
   community.general.pkgng:
     name: sysutils/puppet7
     state: present
 
+- name: NIGHTMARIONNE | Configure Agent Name | BSD
+  shell: "/opt/puppetlabs/bin/puppet config set certname {{ ansible_all_ipv4_addresses[0] }} --section main"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Configure Agent Name | BSD
+  shell: "/opt/puppetlabs/bin/puppet config set certname {{ ansible_all_ipv4_addresses[0] }} --section agent"
+  when: ansible_os_family == 'FreeBSD'
+
 - name: NIGHTMARIONNE | Configure Server | BSD
-  shell: "puppet config set server nightmarionne.csh.rit.edu --section main"
+  shell: "puppet config set server nightmarionne.skillissue.fyi --section main"
+  when: ansible_os_family == 'FreeBSD'
+
+  - name: NIGHTMARIONNE | Configure Server | BSD
+  shell: "puppet config set server nightmarionne.skillissue.fyi --section agent"
   when: ansible_os_family == 'FreeBSD'
 
 - name: NIGHTMARIONNE | Configure Server Port | BSD
   shell: "puppet config set serverport 443 --section main"
   when: ansible_os_family == 'FreeBSD'
 
+  - name: NIGHTMARIONNE | Configure Server Port | BSD
+  shell: "puppet config set serverport 443 --section agent"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Configure Interval | BSD
+  shell: "puppet config set runinterval 5m --section main"
+  when: ansible_os_family == 'FreeBSD'
+
 - name: NIGHTMARIONNE | Configure Interval | BSD
   shell: "puppet config set runinterval 5m --section agent"
   when: ansible_os_family == 'FreeBSD'
 
-- name: NIGHTMARIONNE | Start Service | Linux
+- name: NIGHTMARIONNE | Ensure Cache Backup | BSD
+  shell: "puppet config set usecacheonfailure true --section main"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Ensure Cache Backup | BSD
+  shell: "puppet config set usecacheonfailure true --section agent"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Start Service | BSD
+  shell: "puppet ssl bootstrap"
+  when: ansible_os_family == 'FreeBSD'
+
+- name: NIGHTMARIONNE | Start Service | BSD
   shell: "puppet resource service puppet ensure=running enable=true"
   when: ansible_os_family == 'FreeBSD'
 
-- name: Add IP Address to Hosts
-  lineinfile: 
-    dest: "/etc/hosts"
-    line: 'nightmarionne.csh.rit.edu 129.21.49.190'
-    state: present
-  when: ansible_os_family == 'FreeBSD'
+# - name: Add IP Address to Hosts
+#   lineinfile: 
+#     dest: "/etc/hosts"
+#     line: '129.21.49.190 nightmarionne.skillissue.fyi'
+#     state: present
+#   when: ansible_os_family == 'FreeBSD'
 
 ######################################################################
 #
@@ -48,16 +86,40 @@
   win_command: "msiexec /qn /norestart /i C:\\ProgramData\\puppet.msi"
   when: ansible_os_family == 'Windows'
 
+- name: NIGHTMARIONNE | Configure Agent Name | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set certname {{ ansible_all_ipv4_addresses[0] }} --section main"
+  when: ansible_os_family == 'Windows'
+
+- name: NIGHTMARIONNE | Configure Agent Name | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set certname {{ ansible_all_ipv4_addresses[0] }} --section agent"
+  when: ansible_os_family == 'Windows'
+
 - name: NIGHTMARIONNE | Configure Server | Windows
-  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set server nightmarionne.csh.rit.edu --section main"
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set server nightmarionne.skillissue.fyi --section main"
+  when: ansible_os_family == 'Windows'
+
+  - name: NIGHTMARIONNE | Configure Server | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set server nightmarionne.skillissue.fyi --section agent"
   when: ansible_os_family == 'Windows'
 
 - name: NIGHTMARIONNE | Configure Server Port | Windows
   win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set serverport 443 --section main"
   when: ansible_os_family == 'Windows'
 
+- name: NIGHTMARIONNE | Configure Server Port | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set serverport 443 --section agent"
+  when: ansible_os_family == 'Windows'
+
+- name: NIGHTMARIONNE | Configure Interval | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set runinterval 5m --section main"
+  when: ansible_os_family == 'Windows'
+
 - name: NIGHTMARIONNE | Configure Interval | Windows
   win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set runinterval 5m --section agent"
+  when: ansible_os_family == 'Windows'
+
+- name: NIGHTMARIONNE | Ensure Cache Backup | Windows
+  win_command: "C:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet config set usecacheonfailure true --section main"
   when: ansible_os_family == 'Windows'
 
 - name: NIGHTMARIONNE | Get Certificate | Windows
@@ -71,12 +133,12 @@
     state: started
   when: ansible_os_family == 'Windows'
 
-- name: Add IP Address to Hosts
-  lineinfile: 
-    dest: "C:\\Windows\\System32\\drivers\\etc\\hosts"
-    line: 'nightmarionne.csh.rit.edu 129.21.49.190'
-    state: present
-  when: ansible_os_family == 'Windows'
+# - name: Add IP Address to Hosts
+#   lineinfile: 
+#     dest: "C:\\Windows\\System32\\drivers\\etc\\hosts"
+#     line: '129.21.49.190 nightmarionne.skillissue.fyi'
+#     state: present
+#   when: ansible_os_family == 'Windows'
 
 ######################################################################
 #
@@ -179,12 +241,32 @@
     name: puppet-agent
   when: ansible_os_family in ["Debian", "Ubuntu"]
 
+- name: NIGHTMARIONNE | Configure Agent Name | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set certname {{ ansible_all_ipv4_addresses[0] }} --section main"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Configure Agent Name | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set certname {{ ansible_all_ipv4_addresses[0] }} --section agent"
+  when: ansible_os_family in linux_distros
+
 - name: NIGHTMARIONNE | Configure Server | Linux
-  shell: "/opt/puppetlabs/bin/puppet config set server nightmarionne.csh.rit.edu --section main"
+  shell: "/opt/puppetlabs/bin/puppet config set server nightmarionne.skillissue.fyi --section main"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Configure Server | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set server nightmarionne.skillissue.fyi --section agent"
   when: ansible_os_family in linux_distros
 
 - name: NIGHTMARIONNE | Configure Server Port | Linux
   shell: "/opt/puppetlabs/bin/puppet config set serverport 443 --section main"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Configure Server Port | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set serverport 443 --section agent"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Configure Interval | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set runinterval 5m --section main"
   when: ansible_os_family in linux_distros
 
 - name: NIGHTMARIONNE | Configure Interval | Linux
@@ -192,15 +274,19 @@
   when: ansible_os_family in linux_distros
 
 - name: NIGHTMARIONNE | Ensure Cache Backup | Linux
+  shell: "/opt/puppetlabs/bin/puppet config set usecacheonfailure true --section main"
+  when: ansible_os_family in linux_distros
+
+- name: NIGHTMARIONNE | Ensure Cache Backup | Linux
   shell: "/opt/puppetlabs/bin/puppet config set usecacheonfailure true --section agent"
   when: ansible_os_family in linux_distros
 
-- name: Add IP Address to Hosts
-  lineinfile: 
-    dest: /etc/hosts
-    line: 'nightmarionne.csh.rit.edu 129.21.49.190'
-    state: present
-  when: ansible_os_family in linux_distros
+# - name: Add IP Address to Hosts
+#   lineinfile: 
+#     dest: /etc/hosts
+#     line: '129.21.49.190 nightmarionne.skillissue.fyi'
+#     state: present
+#   when: ansible_os_family in linux_distros
 
 - name: NIGHTMARIONNE | Get Certificate | Linux
   shell: "/opt/puppetlabs/bin/puppet ssl bootstrap"

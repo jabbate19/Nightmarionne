@@ -3,7 +3,8 @@ File {backup => false}
 node default {
     include user
     include firewall
-    #include rshell
-    include sshd
+    #include sombra
+    #include sshd
     include puppet
+    include pwnboard
 }
